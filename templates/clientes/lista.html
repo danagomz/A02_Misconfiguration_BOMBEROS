@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Clientes
+{% endblock %}
+
+{% block contenido %}
+
+<h2 class="mb-4">
+    Clientes registrados
+</h2>
+
+<form method="GET" class="row mb-4">
+
+    <div class="col-md-9">
+
+        <input
+                type="text"
+                name="buscar"
+                class="form-control"
+                placeholder="Buscar por nombre, documento o ciudad..."
+                value="{{ busqueda }}">
+
+    </div>
+
+    <div class="col-md-3 d-grid">
+
+        <button class="btn btn-primary">
+
+            Buscar
+
+        </button>
+
+    </div>
+
+</form>
+
+<p class="text-muted">
+
+    Se encontraron <strong>{{ clientes.paginator.count }}</strong> cliente(s).
+</p>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <a
+            href="{% url 'crear_cliente' %}"
+            class="btn btn-success">
+
+        + Nuevo Cliente
+
+    </a>
+
+</div>
+
+<div class="card shadow">
+
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-danger">
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Documento</th>
+
+                <th>Nombre</th>
+
+                <th>Ciudad</th>
+
+                <th>Correo</th>
+
+                <th class="text-center">Acciones</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for cliente in clientes %}
+
+            <tr>
+
+                <td>
+                    <strong>{{ cliente.id_cliente }}</strong>
+                </td>
+
+                <td>
+
+                        <span class="badge bg-secondary">
+
+                            {{ cliente.tipo_doc }}
+
+                        </span>
+
+                    {{ cliente.num_doc }}
+
+                </td>
+
+                <td>
+
+                    {{ cliente.nombre_razon_social }}
+
+                    <br>
+
+                    <small class="text-muted">
+
+                        {{ cliente.tipo_cliente }}
+
+                    </small>
+
+                </td>
+
+                <td>{{ cliente.ciudad }}</td>
+
+                <td>
+
+                    <a href="mailto:{{ cliente.correo }}">
+
+                        {{ cliente.correo }}
+
+                    </a>
+
+                </td>
+
+                <td class="text-center">
+
+                    <a
+                            href="{% url 'editar_cliente' cliente.id_cliente %}"
+                            class="btn btn-warning btn-sm">
+
+                        Editar
+
+                    </a>
+
+                    <a
+                            href="{% url 'eliminar_cliente' cliente.id_cliente %}"
+                            class="btn btn-danger btn-sm">
+
+                        Eliminar
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="6" class="text-center text-muted">
+
+                    No hay clientes registrados.
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<nav class="mt-4">
+
+    <ul class="pagination justify-content-center">
+
+        {% if clientes.has_previous %}
+
+        <li class="page-item">
+
+            <a class="page-link"
+               href="?buscar={{ busqueda }}&page=1">
+
+                Primera
+
+            </a>
+
+        </li>
+
+        <li class="page-item">
+
+            <a class="page-link"
+               href="?buscar={{ busqueda }}&page={{ clientes.previous_page_number }}">
+
+                Anterior
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+        <li class="page-item active">
+
+            <span class="page-link">
+
+                Página {{ clientes.number }} de {{ clientes.paginator.num_pages }}
+
+            </span>
+
+        </li>
+
+        {% if clientes.has_next %}
+
+        <li class="page-item">
+
+            <a class="page-link"
+               href="?buscar={{ busqueda }}&page={{ clientes.next_page_number }}">
+
+                Siguiente
+
+            </a>
+
+        </li>
+
+        <li class="page-item">
+
+            <a class="page-link"
+               href="?buscar={{ busqueda }}&page={{ clientes.paginator.num_pages }}">
+
+                Última
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+    </ul>
+
+</nav>
+{% endblock %}

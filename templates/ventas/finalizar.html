@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}Finalizar Venta{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-success text-white"><h3>Facturar Orden #{{ orden.id_orden }}</h3></div>
+    <div class="card-body">
+        <p class="fs-5">¿Confirmas que deseas generar la factura para esta orden?</p>
+        <p class="text-muted">Después de esto, la orden queda finalizada: no podrás agregar ni quitar productos.</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-success">Sí, generar factura</button>
+            <a href="{% url 'detalle_venta' orden.id_orden %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

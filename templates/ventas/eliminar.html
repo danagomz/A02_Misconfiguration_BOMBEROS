@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}
+Eliminar Orden
+{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-danger text-white">
+        <h3>Eliminar Orden</h3>
+    </div>
+    <div class="card-body">
+        <p class="fs-5">
+            ¿Está seguro de eliminar la siguiente orden?
+        </p>
+        <table class="table">
+            <tr><th>ID</th><td>{{ orden.id_orden }}</td></tr>
+            <tr><th>Cliente</th><td>{{ orden.id_cliente.nombre_razon_social }}</td></tr>
+            <tr><th>Total</th><td>${{ orden.total }}</td></tr>
+            <tr><th>Estado</th><td>{{ orden.estado }}</td></tr>
+        </table>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger">
+                Sí, eliminar
+            </button>
+            <a href="{% url 'lista_ventas' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-danger text-white">
+
+        <h3 class="mb-0">
+
+            {{ titulo }}
+
+        </h3>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Tipo de documento
+                    </label>
+
+                    {{ formulario.tipo_doc }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Número de documento
+                    </label>
+
+                    {{ formulario.num_doc }}
+
+                    {% if formulario.num_doc.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ formulario.num_doc.errors }}
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Nombre / Razón Social
+                    </label>
+
+                    {{ formulario.nombre_razon_social }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Correo
+                    </label>
+
+                    <label class="form-label">
+                        Correo
+                    </label>
+
+                    {{ formulario.correo }}
+
+                    {% if formulario.correo.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ formulario.correo.errors }}
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Teléfono
+                    </label>
+
+                    {{ formulario.telefono }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Ciudad
+                    </label>
+
+                    {{ formulario.ciudad }}
+
+                </div>
+
+                <div class="col-12 mb-3">
+
+                    <label class="form-label">
+                        Dirección Operativa
+                    </label>
+
+                    {{ formulario.direccion_operativa }}
+
+                </div>
+
+                <div class="col-12 mb-3">
+
+                    <label class="form-label">
+                        Dirección Residencial
+                    </label>
+
+                    {{ formulario.direccion_residencial }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Tipo de Cliente
+                    </label>
+
+                    {{ formulario.tipo_cliente }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Habeas Data
+                    </label>
+
+                    {{ formulario.habeas_data }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Representante Legal
+                    </label>
+
+                    {{ formulario.repre_legal }}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+
+                <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+                <button type="submit" class="btn btn-success">
+
+                    Guardar Cliente
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

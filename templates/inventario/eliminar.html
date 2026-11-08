@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titulo %}Eliminar Registro{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-danger text-white"><h3>Eliminar Registro de Inventario</h3></div>
+    <div class="card-body">
+        <p class="fs-5">¿Está seguro de eliminar este registro?</p>
+        <table class="table">
+            <tr><th>Producto</th><td>{{ item.id_producto.nombre }}</td></tr>
+            <tr><th>Stock actual</th><td>{{ item.stock_actual }}</td></tr>
+        </table>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'lista_inventario' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

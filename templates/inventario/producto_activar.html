@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Reactivar Producto{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-success text-white"><h3>Reactivar Producto</h3></div>
+    <div class="card-body">
+        <p class="fs-5">
+            ¿Desea reactivar <strong>{{ producto.nombre }}</strong>?
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-success">Sí, reactivar</button>
+            <a href="{% url 'lista_productos' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

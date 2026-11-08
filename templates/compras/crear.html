@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<h2 class="mb-4">{{ titulo }}</h2>
+<p class="text-muted">
+    El número de orden y la fecha de pedido se generan automáticamente.
+    El estado inicial siempre es <strong>Pendiente</strong>. Después de guardar,
+    podrás agregar los productos solicitados.
+</p>
+<form method="post">
+    {% csrf_token %}
+    {{ formulario.as_p }}
+    <button class="btn btn-success">Crear Orden</button>
+    <a href="{% url 'lista_ordenes' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

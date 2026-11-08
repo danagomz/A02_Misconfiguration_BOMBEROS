@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+Inicio
+{% endblock %}
+
+{% block contenido %}
+
+<div class="text-center">
+
+    <h1 class="display-4">
+
+        Sistema de Gestión Empresarial
+
+    </h1>
+
+    <h2>
+
+        Benemérito Cuerpo de Bomberos Voluntarios de Cali
+
+    </h2>
+
+    <hr>
+
+    <p class="lead">
+
+        Aplicación desarrollada para la administración de:
+
+    </p>
+
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-3">
+        <a href="/clientes/" style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>👥</h4>
+                    <h5>Clientes</h5>
+                    <p>Administración de clientes.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="/proveedores/" style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>🏭</h4>
+                    <h5>Proveedores</h5>
+                    <p>Gestión de proveedores.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="/compras/" style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>💵</h4>
+                    <h5>Compras</h5>
+                    <p>Órdenes de Pedido a Proveedores.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="/inventario/" style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>📦</h4>
+                    <h5>Inventario</h5>
+                    <p>Control de productos.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="/ventas/" style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>💰</h4>
+                    <h5>Ventas</h5>
+                    <p>Facturación y órdenes.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

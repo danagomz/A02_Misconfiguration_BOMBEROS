@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}Eliminar Proveedor{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-danger text-white"><h3>Eliminar Proveedor</h3></div>
+    <div class="card-body">
+        <p class="fs-5">¿Está seguro de eliminar el siguiente proveedor?</p>
+        <table class="table">
+            <tr><th>ID</th><td>{{ proveedor.id_proveedor }}</td></tr>
+            <tr><th>NIT</th><td>{{ proveedor.nit }}</td></tr>
+            <tr><th>Razón Social</th><td>{{ proveedor.razon_social }}</td></tr>
+        </table>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'lista_proveedores' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block titulo %} Ventas {% endblock %}
+{% block contenido %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Órdenes registradas</h2>
+    <a href="{% url 'crear_venta' %}" class="btn btn-success">+ Nueva Orden</a>
+</div>
+
+<form method="GET" class="row mb-4">
+    <div class="col-md-9">
+        <input type="text" name="buscar" class="form-control" placeholder="Buscar por cliente o estado..." value="{{ busqueda }}">
+    </div>
+    <div class="col-md-3 d-grid">
+        <button class="btn btn-primary">Buscar</button>
+    </div>
+</form>
+
+<p class="text-muted">
+    Se encontraron <strong>{{ ordenes.paginator.count }}</strong> orden(es).
+</p>
+
+<div class="card shadow">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-danger">
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Sede</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for orden in ordenes %}
+            <tr>
+                <td><strong>{{ orden.id_orden }}</strong></td>
+                <td>{{ orden.fecha }}</td>
+                <td>{{ orden.id_cliente.nombre_razon_social }}</td>
+                <td>{{ orden.id_sede.nombre_sede }}</td>
+                <td>${{ orden.total }}</td>
+                <td>
+                    {% if orden.estado == "Entregada" %}
+                    <span class="badge bg-success">{{ orden.estado }}</span>
+                    {% elif orden.estado == "Cancelada" %}
+                    <span class="badge bg-secondary">{{ orden.estado }}</span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">{{ orden.estado }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <a href="{% url 'detalle_venta' orden.id_orden %}" class="btn btn-primary btn-sm">Ver Detalle</a>
+
+                    {% if orden.estado == "En Proceso" or orden.estado == "Pendiente" %}
+                    <a href="{% url 'editar_venta' orden.id_orden %}" class="btn btn-warning btn-sm ms-1">Editar</a>
+                    <a href="{% url 'eliminar_venta' orden.id_orden %}" class="btn btn-danger btn-sm ms-1">Eliminar</a>
+                    {% else %}
+                    <span class="badge bg-secondary ms-1">Inalterable</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">No hay órdenes registradas.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if ordenes.has_previous %}
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page=1">Primera</a></li>
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page={{ ordenes.previous_page_number }}">Anterior</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Página {{ ordenes.number }} de {{ ordenes.paginator.num_pages }}</span></li>
+        {% if ordenes.has_next %}
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page={{ ordenes.next_page_number }}">Siguiente</a></li>
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page={{ ordenes.paginator.num_pages }}">Última</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Eliminar Cliente
+{% endblock %}
+
+{% block contenido %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-danger text-white">
+        <h3>Eliminar Cliente</h3>
+    </div>
+
+    <div class="card-body">
+
+        <p class="fs-5">
+
+            ¿Está seguro de eliminar el siguiente cliente?
+
+        </p>
+
+        <table class="table">
+
+            <tr>
+                <th>ID</th>
+                <td>{{ cliente.id_cliente }}</td>
+            </tr>
+
+            <tr>
+                <th>Documento</th>
+                <td>{{ cliente.num_doc }}</td>
+            </tr>
+
+            <tr>
+                <th>Nombre</th>
+                <td>{{ cliente.nombre_razon_social }}</td>
+            </tr>
+
+            <tr>
+                <th>Ciudad</th>
+                <td>{{ cliente.ciudad }}</td>
+            </tr>
+
+        </table>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button class="btn btn-danger">
+                Sí, eliminar
+            </button>
+
+            <a href="/clientes/" class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Desactivar Producto{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-danger text-white"><h3>Desactivar Producto</h3></div>
+    <div class="card-body">
+        <p class="fs-5">
+            ¿Está seguro de desactivar <strong>{{ producto.nombre }}</strong>?
+        </p>
+        <p class="text-muted">
+            El producto no se elimina físicamente (para conservar el histórico de
+            inventario, ventas y compras); solo se marca como inactivo y dejará de
+            aparecer en los listados y selectores por defecto.
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger">Sí, desactivar</button>
+            <a href="{% url 'lista_productos' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

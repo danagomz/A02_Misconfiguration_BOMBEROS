@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block titulo %}Orden #{{ orden.id_ord_prov }}{% endblock %}
+{% block contenido %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Orden de Pedido #{{ orden.id_ord_prov }}</h2>
+    <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary">Volver</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4"><strong>Proveedor:</strong> {{ orden.id_proveedor.razon_social }}</div>
+            <div class="col-md-4"><strong>NIT:</strong> {{ orden.id_proveedor.nit }}</div>
+            <div class="col-md-4"><strong>Empleado responsable:</strong> {{ orden.id_empleado.nombre }} {{ orden.id_empleado.apellido }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4"><strong>Fecha de pedido:</strong> {{ orden.fecha_orden|date:"d/m/Y H:i" }}</div>
+            <div class="col-md-4"><strong>Lugar de entrega:</strong> {{ orden.lugar_entrega }}</div>
+            <div class="col-md-4">
+                <strong>Estado:</strong>
+                {% if orden.estado == "Pendiente" %}<span class="badge bg-warning text-dark">Pendiente</span>
+                {% elif orden.estado == "Recibida" %}<span class="badge bg-success">Recibida</span>
+                {% else %}<span class="badge bg-secondary">Cancelada</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4"><strong>Total:</strong> ${{ orden.total|default:"0.00" }}</div>
+            {% if orden.fecha_recepcion %}
+            <div class="col-md-4"><strong>Fecha de recepción:</strong> {{ orden.fecha_recepcion|date:"d/m/Y H:i" }}</div>
+            {% endif %}
+        </div>
+
+        {% if orden.es_editable %}
+        <div class="mt-3">
+            <a href="{% url 'recibir_orden' orden.id_ord_prov %}" class="btn btn-success">Marcar como Recibida</a>
+            <a href="{% url 'cancelar_orden' orden.id_ord_prov %}" class="btn btn-danger">Cancelar Orden</a>
+        </div>
+        {% else %}
+        <div class="alert alert-secondary mt-3 mb-0">
+            Esta orden ya fue finalizada ({{ orden.estado }}) y no puede editarse ni eliminarse,
+            de acuerdo con la normativa de trazabilidad de documentos de compra.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-danger text-white">Productos solicitados</div>
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Producto</th><th>Cantidad Pedida</th><th>Cantidad Recibida</th>
+                <th>Costo Unitario</th><th>Subtotal</th>
+                {% if orden.es_editable %}<th class="text-center">Acciones</th>{% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for detalle in detalles %}
+            <tr>
+                <td>{{ detalle.id_producto.nombre }}</td>
+                <td>{{ detalle.cantidad_pedida }}</td>
+                <td>{{ detalle.cantidad_recibida|default:"—" }}</td>
+                <td>${{ detalle.precio_unidad }}</td>
+                <td>${{ detalle.subtotal }}</td>
+                {% if orden.es_editable %}
+                <td class="text-center">
+                    <a href="{% url 'eliminar_detalle_compra' detalle.id_detalle_prov %}" class="btn btn-danger btn-sm">Quitar</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">Todavía no se han agregado productos.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if formulario %}
+<div class="card shadow">
+    <div class="card-header bg-danger text-white">Agregar producto a la orden</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ formulario.as_p }}
+            <button class="btn btn-success">Agregar</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

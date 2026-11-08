@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block titulo %}Orden #{{ orden.id_orden }}{% endblock %}
+{% block contenido %}
+<h2 class="mb-4">Orden de Venta #{{ orden.id_orden }} - {{ orden.estado }}</h2>
+
+<table class="table">
+    <tr><th>Cliente</th><td>{{ orden.id_cliente.nombre_razon_social }} ({{ orden.id_cliente.tipo_doc }} {{ orden.id_cliente.num_doc }})</td></tr>
+    <tr><th>Sede</th><td>{{ orden.id_sede.nombre_sede }}</td></tr>
+    <tr><th>Total</th><td>${{ orden.total }}</td></tr>
+</table>
+
+<h4>Productos</h4>
+<table class="table">
+    <thead><tr><th>Producto</th><th>Cantidad</th><th>Valor Unitario</th><th>Subtotal</th>{% if orden.es_editable %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+    {% for d in detalles %}
+    <tr>
+        <td>{{ d.id_producto.nombre }}</td>
+        <td>{{ d.cantidad }}</td>
+        <td>${{ d.id_producto.precio }}</td>
+        <td>${{ d.subtotal }}</td>
+        {% if orden.es_editable %}
+        <td><a href="{% url 'eliminar_detalle_venta' d.id_detalle %}" class="btn btn-danger btn-sm">Quitar</a></td>
+        {% endif %}
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-center text-muted">Sin productos aún.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if orden.es_editable %}
+<h5>Agregar producto</h5>
+<form method="post">
+    {% csrf_token %}
+    {{ formulario.as_p }}
+    <button class="btn btn-success">Agregar</button>
+</form>
+<a href="{% url 'finalizar_venta' orden.id_orden %}" class="btn btn-danger mt-3">Finalizar y Facturar</a>
+{% endif %}
+
+{% if factura %}
+<hr>
+<div class="card shadow mb-3">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Factura Electrónica de Venta</h4>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h6>Datos del Vendedor</h6>
+                <p class="mb-0">
+                    Bomberos Voluntarios de Cali<br>
+                    NIT 890.399.011-2<br>
+                    Cra. 3 # 10-30, Cali, Valle del Cauca
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h6>Datos del Adquirente</h6>
+                <p class="mb-0">
+                    {{ orden.id_cliente.nombre_razon_social }}<br>
+                    {{ orden.id_cliente.tipo_doc }} {{ orden.id_cliente.num_doc }}
+                </p>
+            </div>
+        </div>
+
+        <table class="table table-sm">
+            <tr><th>Número de Factura</th><td>{{ factura.prefijo }}-{{ factura.num_consec }}</td></tr>
+            <tr><th>Resolución DIAN</th><td>Resolución 000123 - Vigente 2026</td></tr>
+            <tr><th>Fecha de Generación</th><td>{{ factura.fecha_generacion }}</td></tr>
+            <tr><th>Fecha de Expedición</th><td>{{ factura.fecha_exped }}</td></tr>
+        </table>
+
+        <h6>Detalle de bienes e impuestos</h6>
+        <table class="table table-sm">
+            <thead>
+            <tr><th>Producto</th><th>Cant.</th><th>Vlr. Unitario</th><th>Subtotal</th><th>Tarifa IVA</th><th>Vlr. IVA</th></tr>
+            </thead>
+            <tbody>
+            {% for d in detalles_con_iva %}
+            <tr>
+                <td>{{ d.producto }}</td>
+                <td>{{ d.cantidad }}</td>
+                <td>${{ d.valor_unitario }}</td>
+                <td>${{ d.subtotal }}</td>
+                <td>{{ d.tarifa_iva }}%</td>
+                <td>${{ d.iva_linea }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="table table-sm">
+            <tr><th>Subtotal</th><td>${{ factura.subtotal }}</td></tr>
+            <tr><th>Total IVA</th><td>${{ factura.total_iva }}</td></tr>
+            <tr><th>Total a Pagar</th><td><strong>${{ factura.total }}</strong></td></tr>
+        </table>
+
+        <span class="badge bg-success">{{ factura.estado_factura }}</span>
+    </div>
+</div>
+{% endif %}
+
+<a href="{% url 'lista_ventas' %}" class="btn btn-secondary mt-3">Volver</a>
+{% endblock %}

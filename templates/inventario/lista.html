@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block titulo %}Inventario{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Inventario de productos</h2>
+    <div>
+        <a href="{% url 'lista_productos' %}" class="btn btn-outline-danger">Gestionar Productos</a>
+        <a href="{% url 'crear_inventario' %}" class="btn btn-danger">Nuevo Registro de Stock</a>
+    </div>
+</div>
+
+<form method="GET" class="row mb-4">
+    <div class="col-md-9">
+        <input type="text" name="buscar" class="form-control" placeholder="Buscar por producto..." value="{{ busqueda }}">
+    </div>
+    <div class="col-md-3 d-grid">
+        <button class="btn btn-primary">Buscar</button>
+    </div>
+</form>
+
+<div class="card shadow">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-danger">
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Stock Actual</th>
+                <th>Stock Mínimo</th>
+                <th>Demanda Diaria</th>
+                <th>Días de Stock</th>
+                <th>Estado</th>
+                <th>Acción Recomendada</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.id_inventario }}</td>
+                <td>{{ item.id_producto.nombre }}</td>
+                <td>{{ item.stock_actual }}</td>
+                <td>{{ item.stock_minimo }}</td>
+                <td>{{ item.demanda_diaria }}</td>
+                <td>
+                    {% if item.dias_stock_calculado != None %}
+                    {{ item.dias_stock_calculado }}
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.estado_calculado == "Agotado" %}
+                    <span class="badge bg-dark">Agotado</span>
+                    {% elif item.estado_calculado == "Crítico" %}
+                    <span class="badge bg-danger">Crítico</span>
+                    {% elif item.estado_calculado == "Alerta" %}
+                    <span class="badge bg-warning text-dark">Alerta</span>
+                    {% elif item.estado_calculado == "Seguro" %}
+                    <span class="badge bg-success">Seguro</span>
+                    {% else %}
+                    <span class="badge bg-secondary">N/D</span>
+                    {% endif %}
+                </td>
+                <td>{{ item.accion_calculada|default:"—" }}</td>
+                <td class="text-center">
+                    <a href="{% url 'editar_inventario' item.id_inventario %}" class="btn btn-warning btn-sm">Editar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center text-muted">No hay registros de inventario.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if items.has_previous %}
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page=1">Primera</a></li>
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page={{ items.previous_page_number }}">Anterior</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Página {{ items.number }} de {{ items.paginator.num_pages }}</span></li>
+        {% if items.has_next %}
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page={{ items.next_page_number }}">Siguiente</a></li>
+        <li class="page-item"><a class="page-link" href="?buscar={{ busqueda }}&page={{ items.paginator.num_pages }}">Última</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}

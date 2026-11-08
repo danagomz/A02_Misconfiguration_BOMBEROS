@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Recibir Orden{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-success text-white"><h3>Marcar Orden como Recibida</h3></div>
+    <div class="card-body">
+        <p class="fs-5">
+            ¿Confirmas que la orden #{{ orden.id_ord_prov }} de
+            <strong>{{ orden.id_proveedor.razon_social }}</strong> ya fue recibida?
+        </p>
+        <p class="text-muted">
+            Después de esto, la orden queda finalizada: no podrás agregar ni quitar
+            productos ni volver a cambiar su estado.
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-success">Sí, marcar como Recibida</button>
+            <a href="{% url 'detalle_orden' orden.id_ord_prov %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

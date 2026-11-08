@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Quitar producto{% endblock %}
+{% block contenido %}
+<div class="card shadow">
+    <div class="card-header bg-danger text-white"><h3>Quitar producto de la orden</h3></div>
+    <div class="card-body">
+        <p class="fs-5">¿Quitar <strong>{{ detalle.id_producto.nombre }}</strong> (x{{ detalle.cantidad }}) de la orden?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger">Sí, quitar</button>
+            <a href="{% url 'detalle_venta' detalle.id_orden.id_orden %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
