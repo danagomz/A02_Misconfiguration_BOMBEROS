@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bomberos_cali',
         'USER': 'postgres',
-        'PASSWORD': 'laura18',
+        'PASSWORD': 'hilary2112',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -130,3 +130,38 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     ]
+
+
+LOG_DIR = BASE_DIR/"logs"
+LOG_DIR.mkdir(parents=True, exist_ok = True)
+
+LOGGING = {"version" : 1,
+           "disable_existing_loggers": False,
+           
+           "formatters" : {
+               "detallado": {
+                   "format": "{asctime} {levelname} {name} {message}",
+                   "style": "{",
+               },
+           },
+           
+           "handlers" : {
+               "archivo" : {
+                   "level" : "WARNING",
+                   "class" : "logging.handlers.RotatingFileHandler",
+                   "filename" : str(LOG_DIR / "django.log"),
+                   "maxBytes" : 1024 * 1024,
+                   "backupCount" : 5,
+                   "formatter": "detallado",
+                   "encoding" : "utf-8",
+               },
+           },
+
+           "loggers" : {
+               "django.request" : {
+                   "handlers": ["archivo"],
+                   "level" : "WARNING",
+                   "propagate" : False,
+               },
+           },
+        }
