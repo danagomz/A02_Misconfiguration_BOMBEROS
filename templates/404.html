@@ -1,18 +1,22 @@
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Página no encontrada</title>
-  </head>
-  <body>
-    <main>
-      <h1>404</h1>
-      <h2>Página no encontrada</h2>
+{% extends "base.html" %}
 
-      <p>Lo sentimos, la página que buscas no existe o no está disponible.</p>
+{% block titulo %}Página no encontrada{% endblock %}
 
-      <a href="/">Volver al inicio</a>
-    </main>
-  </body>
-</html>
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm text-center">
+            <div class="card-body p-5">
+                <p class="display-1 fw-bold text-danger mb-0">404</p>
+                <h1 class="h2 mt-3">Página no encontrada</h1>
+                <p class="lead text-muted">
+                    La dirección que buscas no existe o ya no está disponible.
+                </p>
+                <a class="btn btn-danger mt-3" href="/">
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
