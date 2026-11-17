@@ -7,5 +7,5 @@ def inicio(request):
 def vista_error_404(request, exception):
     return render(request, "404.html")
 
-def vista_error_500(request, exception):
+def vista_error_500(request):
     return render(request, "500.html")
