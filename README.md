@@ -127,11 +127,15 @@ SGE-Bomberos-Cali-BD/
 │
 ├── db/
 │ ├── ddl.sql
-│ ├── 01_maestros.sql
-│ ├── 02_transacciones_ventas.sql
-│ ├── 03_transacciones_compras.sql
-│ └── consultas.sql
+│ ├── roles.sql
+│ ├── consultas.sql
+│ └── insert/
+│    ├── 00_reset.sql
+│    ├── 01_bases.sql
+│    ├── 02_transacciones_ventas.sql
+│    └── 03_transacciones_compras.sql
 │
+├── .env.example
 ├── manage.py
 │
 └── requirements.txt
@@ -191,7 +195,7 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Configurar PostgreSQL
+## 5. Configurar PostgreSQL y el archivo .env
 
 Crear una base de datos llamada:
 
@@ -199,26 +203,11 @@ Crear una base de datos llamada:
 bomberos_cali
 ```
 
-Editar el archivo:
+Copiar `.env.example` como `.env` y completar los valores locales. La aplicación lee ahí la conexión y la configuración de seguridad; no guardes la contraseña real en Git. El usuario de ejecución recomendado es `app_bomberos`, creado con `db/roles.sql`.
 
-```
-core/settings.py
-```
+Si la contraseña contiene `#` o símbolos especiales, escribirla entre comillas simples en `.env`.
 
-Configurar los datos de conexión:
-
-```python
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "bomberos_cali",
-        "USER": "postgres",
-        "PASSWORD": "********",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
-```
+En desarrollo local por HTTP, conservar `DEBUG=True`, `SECURE_SSL_REDIRECT=False`, `SECURE_HSTS_SECONDS=0`, `CSRF_COOKIE_SECURE=False` y `SESSION_COOKIE_SECURE=False`.
 
 ---
 
@@ -234,7 +223,9 @@ db/ddl.sql
 
 ## 7. Cargar los datos
 
-### 01_maestros.sql
+Si se va a vaciar y volver a cargar una base ya creada, abrir `db/insert/00_reset.sql` en Query Tool. En esa misma sesión, ejecutar primero `SET app.permitir_reset = 'on';` y luego el archivo.
+
+### 01_bases.sql
 
 Carga la información principal:
 
@@ -269,7 +260,13 @@ Carga:
 
 ---
 
-## 8. Ejecutar las consultas de validación
+## 8. Crear los roles de la aplicación
+
+Después de crear el esquema y cargar los datos, ejecutar `db/roles.sql` en Query Tool conectado a `bomberos_cali`. Cambiar los valores `CAMBIAR_ESTA_CLAVE` solo en el editor antes de ejecutar; no guardar el archivo con contraseñas reales.
+
+El rol `app_bomberos` tiene permisos de lectura y escritura, pero no puede crear tablas. Por eso las migraciones de Django se ejecutan una vez como el propietario de la base (`postgres`) para que se creen las tablas de autenticación y sesión. Luego la aplicación funciona con `app_bomberos`.
+
+## 9. Ejecutar las consultas de validación
 
 Abrir:
 
@@ -283,18 +280,22 @@ y ejecutar todas las consultas.
 
 # Ejecutar la aplicación
 
-Una vez instalada la base de datos y configurado Django:
+Una vez cargados los datos y creados los roles, instalar o activar el entorno de Python y completar `.env`.
 
-Aplicar migraciones:
+En PowerShell, sobreescribir temporalmente la conexión para aplicar migraciones como `postgres`:
 
-```bash
-python manage.py migrate
+```powershell
+$env:DB_USER = 'postgres'
+$env:DB_PASSWORD = 'CLAVE_LOCAL_DE_POSTGRES'
+py manage.py migrate
+Remove-Item Env:DB_USER, Env:DB_PASSWORD
 ```
 
-Iniciar el servidor:
+Después, `.env` debe quedar con `DB_USER=app_bomberos` y la clave correspondiente al rol. Crear el usuario de Django e iniciar el servidor:
 
-```bash
-python manage.py runserver
+```powershell
+py manage.py createsuperuser
+py manage.py runserver
 ```
 
 Abrir el navegador en:

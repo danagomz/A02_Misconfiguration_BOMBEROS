@@ -11,21 +11,44 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
+from django.utils.csp import CSP
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Carga la configuración local sin guardar valores sensibles en el repositorio.
+load_dotenv(BASE_DIR / ".env")
+
+
+def env_bool(name, default=False):
+    """Interpreta valores habituales de variables booleanas en .env."""
+    return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c(8(elu1)au#bx&j!j%qae4t0_!lfk!i#rp4hf88sjg&494ke4'
+DEVELOPMENT_SECRET_KEY = "django-insecure-local-development-only-change-before-deploy"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    os.getenv("DJANGO_SECRET_KEY", DEVELOPMENT_SECRET_KEY),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool("DEBUG", True)
+if not DEBUG and SECRET_KEY == DEVELOPMENT_SECRET_KEY:
+    raise ImproperlyConfigured("Configura SECRET_KEY en .env antes de desplegar con DEBUG=False.")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -48,6 +71,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.csp.ContentSecurityPolicyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,11 +106,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bomberos_cali',
-        'USER': 'postgres',
-        'PASSWORD': 'laura18',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'bomberos_cali'),
+        'USER': os.getenv('DB_USER', 'app_bomberos'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -130,3 +154,34 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     ]
+
+# HTTPS en despliegues; los valores locales permiten probar en http://localhost.
+SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", not DEBUG)
+SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0" if DEBUG else "31536000"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
+CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
+SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
+SESSION_COOKIE_HTTPONLY = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+# La CSP permite los recursos locales y Bootstrap desde jsDelivr. No se permite
+# JavaScript/CSS inline; el HTML se ajustó para cumplir esa política.
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "base-uri": [CSP.SELF],
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+    "object-src": [CSP.NONE],
+    "script-src": [CSP.SELF, "https://cdn.jsdelivr.net"],
+    "style-src": [CSP.SELF, "https://cdn.jsdelivr.net"],
+    "img-src": [CSP.SELF, "data:"],
+    "font-src": [CSP.SELF, "https://cdn.jsdelivr.net", "data:"],
+    "connect-src": [CSP.SELF],
+}
+
+ADMIN_PATH = os.getenv("ADMIN_PATH", "gestion-interna/").strip("/") + "/"
+LOGIN_URL = "/acceso/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/acceso/"

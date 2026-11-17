@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
@@ -33,6 +34,7 @@ def calcular_estado_stock(stock_actual, demanda_diaria):
 # ========================================================================
 # INVENTARIO (stock)
 # ========================================================================
+@login_required
 def lista_inventario(request):
     busqueda = request.GET.get("buscar", "")
     items = Inventario.objects.select_related("id_producto").all()
@@ -60,6 +62,7 @@ def lista_inventario(request):
     })
 
 
+@login_required
 def crear_inventario(request):
     if request.method == "POST":
         formulario = InventarioForm(request.POST)
@@ -75,6 +78,7 @@ def crear_inventario(request):
     })
 
 
+@login_required
 def editar_inventario(request, id_inventario):
     item = get_object_or_404(Inventario, pk=id_inventario)
     if request.method == "POST":
@@ -91,6 +95,7 @@ def editar_inventario(request, id_inventario):
     })
 
 
+@login_required
 def eliminar_inventario(request, id_inventario):
     item = get_object_or_404(Inventario, pk=id_inventario)
     if request.method == "POST":
@@ -103,6 +108,7 @@ def eliminar_inventario(request, id_inventario):
 # ========================================================================
 # PRODUCTO (entidad propia, antes inexistente)
 # ========================================================================
+@login_required
 def lista_productos(request):
     busqueda = request.GET.get("buscar", "")
     mostrar_inactivos = request.GET.get("inactivos") == "1"
@@ -127,6 +133,7 @@ def lista_productos(request):
     })
 
 
+@login_required
 def crear_producto(request):
     if request.method == "POST":
         formulario = ProductoForm(request.POST)
@@ -148,6 +155,7 @@ def crear_producto(request):
     })
 
 
+@login_required
 def editar_producto(request, id_producto):
     producto = get_object_or_404(Producto, pk=id_producto)
     if request.method == "POST":
@@ -164,6 +172,7 @@ def editar_producto(request, id_producto):
     })
 
 
+@login_required
 def eliminar_producto(request, id_producto):
     """
     Eliminación LÓGICA: nunca se hace .delete() físico sobre Producto,
@@ -184,6 +193,7 @@ def eliminar_producto(request, id_producto):
     return render(request, "inventario/producto_eliminar.html", {"producto": producto})
 
 
+@login_required
 def activar_producto(request, id_producto):
     """Permite reactivar un producto dado de baja lógicamente."""
     producto = get_object_or_404(Producto, pk=id_producto)

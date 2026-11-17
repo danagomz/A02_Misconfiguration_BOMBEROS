@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Proveedor
 from .forms import ProveedorForm
@@ -7,6 +8,7 @@ from django.db.models.deletion import ProtectedError, IntegrityError
 from django.db.models import Q
 from django.db import connection
 
+@login_required
 def lista_proveedores(request):
     busqueda = request.GET.get("buscar", "")
     proveedores = Proveedor.objects.all()
@@ -23,6 +25,7 @@ def lista_proveedores(request):
         "busqueda": busqueda
     })
 
+@login_required
 def crear_proveedor(request):
     if request.method == "POST":
         formulario = ProveedorForm(request.POST)
@@ -46,6 +49,7 @@ def crear_proveedor(request):
         "titulo": "Nuevo Proveedor"
     })
 
+@login_required
 def editar_proveedor(request, id_proveedor):
     proveedor = get_object_or_404(Proveedor, pk=id_proveedor)
     if request.method == "POST":
@@ -61,6 +65,7 @@ def editar_proveedor(request, id_proveedor):
         "titulo": "Editar Proveedor"
     })
 
+@login_required
 def eliminar_proveedor(request, id_proveedor):
     proveedor = get_object_or_404(Proveedor, pk=id_proveedor)
     if request.method == "POST":
