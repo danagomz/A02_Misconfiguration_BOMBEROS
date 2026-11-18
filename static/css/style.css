@@ -20,11 +20,6 @@ body{
 
 }
 
-.card-link{
-    color:inherit;
-    text-decoration:none;
-}
-
 .card:hover{
 
     transform:translateY(-5px);
@@ -49,4 +44,8 @@ footer{
 
     color:gray;
 
+}
+.card-link {
+    color: inherit;
+    text-decoration: none;
 }
