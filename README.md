@@ -44,11 +44,12 @@ https://www.bomberoscali.org.co
 
 # Integrantes
 
-| Nombre | Código |
-|--------|--------|
+| Nombre                    | Código  |
+| ------------------------- | ------- |
 | Dana Sofía Gomez Manrique | 2438171 |
-| Hilary Herrera Erazo | 2438987 |
-| Laura Valentina Bernal Lozada | 2437088 |
+| Hilary Herrera Erazo      | 2438987 |
+| Santiago Duque            |         |
+| Alejandro Escudero        |         |
 
 ---
 
