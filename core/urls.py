@@ -15,3 +15,6 @@ urlpatterns = [
     path("ventas/", include("apps.ventas.urls")),
     path("compras/", include("apps.compras.urls")),
 ]
+
+handler404 = "core.views.vista_error_404"
+handler500 = "core.views.vista_error_500"

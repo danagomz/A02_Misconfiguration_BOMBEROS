@@ -140,3 +140,35 @@ ADMIN_PATH = "gestion-interna/"
 LOGIN_URL = "/acceso/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/acceso/"
+
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "detallado": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "archivo": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(LOG_DIR / "django.log"),
+            "maxBytes": 1024 * 1024,
+            "backupCount": 5,
+            "formatter": "detallado",
+            "encoding": "utf-8",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["archivo"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}
