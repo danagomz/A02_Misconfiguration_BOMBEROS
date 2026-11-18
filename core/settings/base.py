@@ -5,6 +5,7 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
+from django.utils.csp import CSP
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.csp.ContentSecurityPolicyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,37 +120,55 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     ]
 
+SESSION_COOKIE_HTTPONLY = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "base-uri": [CSP.SELF],
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+    "object-src": [CSP.NONE],
+    "script-src": [CSP.SELF, "https://cdn.jsdelivr.net"],
+    "style-src": [CSP.SELF, "https://cdn.jsdelivr.net"],
+    "img-src": [CSP.SELF, "data:"],
+    "font-src": [CSP.SELF, "https://cdn.jsdelivr.net", "data:"],
+    "connect-src": [CSP.SELF],
+}
 
-LOG_DIR = BASE_DIR/"logs"
-LOG_DIR.mkdir(parents=True, exist_ok = True)
+ADMIN_PATH = "gestion-interna/"
+LOGIN_URL = "/acceso/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/acceso/"
 
-LOGGING = {"version" : 1,
-           "disable_existing_loggers": False,
-           
-           "formatters" : {
-               "detallado": {
-                   "format": "{asctime} {levelname} {name} {message}",
-                   "style": "{",
-               },
-           },
-           
-           "handlers" : {
-               "archivo" : {
-                   "level" : "WARNING",
-                   "class" : "logging.handlers.RotatingFileHandler",
-                   "filename" : str(LOG_DIR / "django.log"),
-                   "maxBytes" : 1024 * 1024,
-                   "backupCount" : 5,
-                   "formatter": "detallado",
-                   "encoding" : "utf-8",
-               },
-           },
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-           "loggers" : {
-               "django.request" : {
-                   "handlers": ["archivo"],
-                   "level" : "WARNING",
-                   "propagate" : False,
-               },
-           },
-        }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "detallado": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "archivo": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(LOG_DIR / "django.log"),
+            "maxBytes": 1024 * 1024,
+            "backupCount": 5,
+            "formatter": "detallado",
+            "encoding": "utf-8",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["archivo"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}

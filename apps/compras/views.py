@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -18,6 +19,7 @@ def _recalcular_total(orden):
 # ========================================================================
 # ORDEN DE PEDIDO A PROVEEDOR (documento)
 # ========================================================================
+@login_required
 def lista_ordenes(request):
     busqueda = request.GET.get("buscar", "")
     ordenes = OrdenProveedor.objects.select_related("id_proveedor", "id_empleado").all()
@@ -38,6 +40,7 @@ def lista_ordenes(request):
     })
 
 
+@login_required
 def crear_orden(request):
     if request.method == "POST":
         formulario = OrdenProveedorForm(request.POST)
@@ -63,6 +66,7 @@ def crear_orden(request):
     })
 
 
+@login_required
 def detalle_orden(request, id_ord_prov):
     """
     Pantalla principal de una orden: muestra sus datos, sus líneas de
@@ -92,6 +96,7 @@ def detalle_orden(request, id_ord_prov):
     })
 
 
+@login_required
 def eliminar_detalle(request, id_detalle_prov):
     """
     Solo se puede quitar una línea mientras la orden siga Pendiente
@@ -113,6 +118,7 @@ def eliminar_detalle(request, id_detalle_prov):
     return render(request, "compras/eliminar_detalle.html", {"detalle": detalle})
 
 
+@login_required
 def recibir_orden(request, id_ord_prov):
     """
     Transición de estado Pendiente -> Recibida.
@@ -157,6 +163,7 @@ def recibir_orden(request, id_ord_prov):
     return render(request, "compras/recibir.html", {"orden": orden})
 
 
+@login_required
 def cancelar_orden(request, id_ord_prov):
     orden = get_object_or_404(OrdenProveedor, pk=id_ord_prov)
     if request.method == "POST":
