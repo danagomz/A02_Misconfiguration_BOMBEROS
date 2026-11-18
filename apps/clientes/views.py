@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Cliente
@@ -9,6 +10,7 @@ from django.db.models import Q
 from django.db import connection
 
 
+@login_required
 def lista_clientes(request):
 
     busqueda = request.GET.get("buscar", "")
@@ -43,6 +45,7 @@ def lista_clientes(request):
     )
 
 
+@login_required
 def crear_cliente(request):
 
     if request.method == "POST":
@@ -78,6 +81,7 @@ def crear_cliente(request):
     )
 
 
+@login_required
 def editar_cliente(request, id_cliente):
 
     cliente = get_object_or_404(
@@ -115,6 +119,7 @@ def editar_cliente(request, id_cliente):
         }
     )
 
+@login_required
 def eliminar_cliente(request, id_cliente):
 
     cliente = get_object_or_404(

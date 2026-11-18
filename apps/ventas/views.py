@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Orden, DetalleOrden, Factura
 from .forms import OrdenForm, DetalleOrdenForm
@@ -33,6 +34,7 @@ TARIFA_IVA_GENERAL = Decimal("0.19")
 def obtener_tarifa_iva(categoria):
     return TARIFAS_IVA_POR_CATEGORIA.get(categoria, TARIFA_IVA_GENERAL)
 
+@login_required
 def lista_ventas(request):
     busqueda = request.GET.get("buscar", "")
     ordenes = Orden.objects.select_related("id_cliente", "id_empleado", "id_sede").all()
@@ -50,6 +52,7 @@ def lista_ventas(request):
         "busqueda": busqueda
     })
 
+@login_required
 def crear_venta(request):
     if request.method == "POST":
         formulario = OrdenForm(request.POST)
@@ -73,6 +76,7 @@ def crear_venta(request):
         "titulo": "Nueva Orden"
     })
 
+@login_required
 def editar_venta(request, id_orden):
     orden = get_object_or_404(Orden, pk=id_orden)
 
@@ -93,6 +97,7 @@ def editar_venta(request, id_orden):
         "titulo": "Editar Orden"
     })
 
+@login_required
 def eliminar_venta(request, id_orden):
     orden = get_object_or_404(Orden, pk=id_orden)
 
@@ -117,6 +122,7 @@ def _recalcular_total(orden):
     orden.total = total
     orden.save(update_fields=["total"])
 
+@login_required
 def detalle_venta(request, id_orden):
     orden = get_object_or_404(Orden, pk=id_orden)
     detalles = orden.detalles.select_related("id_producto").all()
@@ -172,6 +178,7 @@ def detalle_venta(request, id_orden):
     })
 
 
+@login_required
 def eliminar_detalle_venta(request, id_detalle):
     detalle = get_object_or_404(DetalleOrden, pk=id_detalle)
     orden = detalle.id_orden
@@ -193,6 +200,7 @@ def eliminar_detalle_venta(request, id_detalle):
     return render(request, "ventas/eliminar_detalle.html", {"detalle": detalle})
 
 
+@login_required
 def finalizar_venta(request, id_orden):
     orden = get_object_or_404(Orden, pk=id_orden)
 

@@ -34,6 +34,7 @@
         <div class="collapse navbar-collapse" id="menu">
 
             <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
 
                 <li class="nav-item">
                     <a class="nav-link" href="/clientes/">Clientes</a>
@@ -54,6 +55,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/compras/">Compras</a>
                 </li>
+                <li class="nav-item d-flex align-items-center">
+                    <span class="navbar-text me-2">{{ user.get_username }}</span>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-light btn-sm" type="submit">Cerrar sesión</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                </li>
+                {% endif %}
 
             </ul>
 

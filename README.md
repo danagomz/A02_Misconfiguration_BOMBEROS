@@ -118,8 +118,13 @@ SGE-Bomberos-Cali-BD/
 │ └── ...
 │
 ├── core/
+│ └── settings/
+│    ├── base.py
+│    ├── dev.py
+│    └── prod.py
 │
 ├── templates/
+│ └── registration/
 │
 ├── static/
 │ ├── css/
@@ -127,13 +132,16 @@ SGE-Bomberos-Cali-BD/
 │
 ├── db/
 │ ├── ddl.sql
-│ ├── 01_maestros.sql
-│ ├── 02_transacciones_ventas.sql
-│ ├── 03_transacciones_compras.sql
-│ └── consultas.sql
+│ ├── roles.sql
+│ ├── consultas.sql
+│ └── insert/
+│    ├── 00_reset.sql
+│    ├── 01_bases.sql
+│    ├── 02_transacciones_ventas.sql
+│    └── 03_transacciones_compras.sql
 │
+├── .env.example
 ├── manage.py
-│
 └── requirements.txt
 ```
 
@@ -191,117 +199,79 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Configurar PostgreSQL
+## 5. Configurar PostgreSQL y el entorno
 
-Crear una base de datos llamada:
+Crear una base de datos llamada `bomberos_cali` y copiar el ejemplo de variables:
 
-```
-bomberos_cali
-```
-
-Editar el archivo:
-
-```
-core/settings.py
+```powershell
+Copy-Item .env.example .env
 ```
 
-Configurar los datos de conexión:
+Completar `.env` con los valores locales. Se usan estas variables:
 
-```python
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "bomberos_cali",
-        "USER": "postgres",
-        "PASSWORD": "********",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
-```
+- `DJANGO_SECRET_KEY` (obligatoria)
+- `DJANGO_DEBUG` (solo desarrollo; por defecto `True`)
+- `DJANGO_ALLOWED_HOSTS` (obligatoria en producción; en desarrollo tiene valores locales por defecto)
+- `DB_NAME`, `DB_USER`, `DB_PASSWORD` (obligatorias)
+- `DB_HOST` y `DB_PORT` (opcionales; por defecto `localhost` y `5432`)
+
+El usuario normal de la aplicación es `app_bomberos`. No guardar `.env` ni claves reales en Git; `.env.example` solo debe tener valores de ejemplo.
+
+`manage.py` usa `core.settings.dev` para desarrollo local. Producción usa `core.settings.prod`, que establece `DEBUG=False` y activa HTTPS, HSTS y cookies seguras. En GitHub Actions se debe definir `DJANGO_SETTINGS_MODULE=core.settings.prod` en el entorno del workflow, junto con `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DB_NAME`, `DB_USER` y `DB_PASSWORD`. `DB_HOST` y `DB_PORT` se pueden definir si no se usan sus valores por defecto. `DJANGO_DEBUG` solo se usa en `core.settings.dev`.
 
 ---
 
 ## 6. Crear las tablas
 
-Ejecutar el archivo
-
-```
-db/ddl.sql
-```
+Ejecutar `db/ddl.sql` conectado a la base `bomberos_cali`.
 
 ---
 
 ## 7. Cargar los datos
 
-### 01_maestros.sql
+Los archivos se ejecutan en este orden:
 
-Carga la información principal:
+1. `db/insert/01_bases.sql`
+2. `db/insert/02_transacciones_ventas.sql`
+3. `db/insert/03_transacciones_compras.sql`
 
-- Clientes
-- Empleados
-- Sedes
-- Productos
-- Proveedores
+Si se necesita vaciar y cargar de nuevo una base ya existente, ejecutar en la misma sesión de pgAdmin `SET app.permitir_reset = 'on';` y luego `db/insert/00_reset.sql`.
 
 ---
 
-### 02_transacciones_ventas.sql
+## 8. Crear los roles de la aplicación
 
-Carga:
-
-- Órdenes
-- Detalles de orden
-- Facturas
-- Pagos
-- Entregas
+Después de crear las tablas y cargar los datos, ejecutar `db/roles.sql` en pgAdmin. Sustituir `CAMBIAR_ESTA_CLAVE` y `CAMBIAR_ESTA_CLAVE_2` solo en el editor y no guardar el archivo con claves reales. Si una clave local tiene `#` u otros símbolos, escribirla entre comillas simples en `.env`. El rol `app_bomberos` no crea tablas; conserva los permisos de uso de la aplicación.
 
 ---
 
-### 03_transacciones_compras.sql
+## 9. Consultas y migraciones
 
-Carga:
+Ejecutar `db/consultas.sql` para revisar los datos. Las migraciones de Django se deben aplicar como propietario de la base (`postgres`), para que se creen las tablas de autenticación y sesión:
 
-- Órdenes de compra
-- Detalles de compra
-- Facturas de proveedores
-- Pagos a proveedores
-
----
-
-## 8. Ejecutar las consultas de validación
-
-Abrir:
-
-```
-db/consultas.sql
+```powershell
+$env:DB_USER = 'postgres'
+$env:DB_PASSWORD = 'CLAVE_LOCAL_DE_POSTGRES'
+py manage.py migrate
+Remove-Item Env:DB_USER, Env:DB_PASSWORD
 ```
 
-y ejecutar todas las consultas.
+Después de eso, `.env` debe volver a usar `DB_USER=app_bomberos`. Crear el usuario administrador y correr la app en desarrollo:
 
----
-
-# Ejecutar la aplicación
-
-Una vez instalada la base de datos y configurado Django:
-
-Aplicar migraciones:
-
-```bash
-python manage.py migrate
+```powershell
+py manage.py createsuperuser
+py manage.py runserver
 ```
 
-Iniciar el servidor:
+Abrir `http://127.0.0.1:8000/`. Desarrollo usa HTTP; producción debe servirse por HTTPS.
 
-```bash
-python manage.py runserver
+Para revisar la configuración de producción, con las variables requeridas disponibles, ejecutar:
+
+```powershell
+py manage.py check --deploy --settings=core.settings.prod
 ```
 
-Abrir el navegador en:
-
-```
-http://127.0.0.1:8000/
-```
+En un workflow también se puede definir `DJANGO_SETTINGS_MODULE=core.settings.prod` en el entorno antes de ejecutar el comando. Para cargar producción son obligatorias `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DB_NAME`, `DB_USER` y `DB_PASSWORD`; `DB_HOST` y `DB_PORT` tienen valores por defecto.
 
 ---
 
