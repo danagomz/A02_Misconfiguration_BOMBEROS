@@ -1,4 +1,5 @@
-# Sistema de Gestión Comercial — Bomberos Voluntarios de Cali
+# OWASP TOP MISCONFIGURATION
+##Sistema de Gestión Comercial — Bomberos Voluntarios de Cali
 
 ## Descripción del Proyecto
 
@@ -63,7 +64,6 @@ https://www.bomberoscali.org.co
 - CSS3
 - Git
 - GitHub
-- IntelliJ IDEA
 - pgAdmin 4
 
 ---
